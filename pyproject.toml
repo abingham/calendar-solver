@@ -1,0 +1,11 @@
+[project]
+name = "calendar-solver"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.1.1",
+    "more-itertools>=10.6.0",
+    "numpy>=2.2.4",
+]
