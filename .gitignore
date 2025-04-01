@@ -5,6 +5,8 @@ build/
 dist/
 wheels/
 *.egg-info
+.approval_tests_temp
+.ipynb_checkpoints/
 
 # Virtual environments
 .venv
