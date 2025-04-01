@@ -24,3 +24,9 @@ To solve the calendar:
 ```
 calendar-solver
 ```
+
+Search space
+============
+
+It seems to be something like 5.8e24 (septillion) combinations of piece, orientation, and placement.
+5_868_249_732_031_622_747_783_168

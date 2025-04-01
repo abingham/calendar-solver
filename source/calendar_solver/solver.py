@@ -100,9 +100,9 @@ def _solve(board, buckets, counter=0):
 def main():
     BOARD = numpy.array(
         [
-            [0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [0, 0, 0, 1, 1, 0, 0, 0, 1],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -111,16 +111,16 @@ def main():
     )
 
     PIECES = [
-        numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1], [1, 0, 0], [1, 0, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1, 1], [0, 1, 0, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1], [1, 1, 0]], dtype=numpy.int8),
-        numpy.array([[0, 0, 1], [1, 1, 1], [1, 0, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1], [0, 1, 0], [0, 1, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=numpy.int8),
-        numpy.array([[0, 0, 1, 1], [1, 1, 1, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1, 1], [1, 0, 0, 0]], dtype=numpy.int8),
-        numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8), # 2
+        numpy.array([[1, 1, 1], [1, 0, 0], [1, 0, 0]], dtype=numpy.int8), # 4
+        numpy.array([[1, 1, 1, 1], [0, 1, 0, 0]], dtype=numpy.int8), # 8
+        numpy.array([[1, 1, 1], [1, 1, 0]], dtype=numpy.int8), # 8
+        numpy.array([[0, 0, 1], [1, 1, 1], [1, 0, 0]], dtype=numpy.int8), # 8
+        numpy.array([[1, 1, 1], [0, 1, 0], [0, 1, 0]], dtype=numpy.int8), # 4
+        numpy.array([[1, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=numpy.int8), # 8
+        numpy.array([[0, 0, 1, 1], [1, 1, 1, 0]], dtype=numpy.int8), # 8
+        numpy.array([[1, 1, 1, 1], [1, 0, 0, 0]], dtype=numpy.int8), # 8
+        numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8), # 4
     ]
 
     solved = solve(BOARD, PIECES)
