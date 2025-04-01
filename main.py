@@ -32,22 +32,27 @@ def count_zeros(arr: numpy.ndarray) -> int:
     return arr.size - numpy.count_nonzero(arr)
 
 
-def solve(board, buckets):
+def solve(board, pieces):
     """Solve the board with the given buckets.
     
+    This is the top-level solver function. It defers to a numba-based recursive implementation.
+
     Args:
         board: The 2D numpy array representing the board. It should have zeroes in any empty spaces, and any positive integer elsewhere.
-        buckets: A list of lists, where each inner list contains pieces (numpy arrays) that can be placed on the board.
+        pieces: An iterable of 2D numpy arrays representing the pieces to place on the board. Each piece should have 1 on the squares it occupies, and 0 elsewhere.
 
     Returns: True if the board is solved, False otherwise. The `board` argument will contain the final state of the board, solved or not.
     """
-    new_buckets = numba.typed.typedlist.List()
-    for bucket in buckets:
-        new_bucket = numba.typed.typedlist.List()
-        for piece in bucket:
-            new_bucket.append(piece)
-        new_buckets.append(new_bucket)
-    result = _solve(board, new_buckets)
+    # We have to copy the oriented pieces into numba-specific lists to make them amenable to numba.
+    buckets = numba.typed.typedlist.List()
+    for piece in pieces:
+        bucket = numba.typed.typedlist.List()
+        for orientation in orientations(piece):
+            # This "copy" seems to be necessary to make sure all of our pieces have the same layout. I guess views are problematic for numba, but I'm not 100% sure.
+            bucket.append(orientation.copy())
+        buckets.append(bucket)
+
+    result = _solve(board, buckets)
 
     if result == 0:
         assert count_zeros(board) == 0, "The board should have no zeros if it's solved."
@@ -117,11 +122,6 @@ PIECES = [
     numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8),
 ]
 
-BUCKETS = [
-    [o.copy() for o in orientations(piece * index)]
-    for index, piece in enumerate(PIECES, start=2)
-]
-
-solved = solve(BOARD, BUCKETS)
+solved = solve(BOARD, PIECES)
 print("solved:", solved)
 print(BOARD)

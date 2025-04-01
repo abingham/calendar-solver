@@ -1,11 +1,17 @@
 [project]
 name = "calendar-solver"
 version = "0.1.0"
-description = "Add your description here"
+description = "Solver for pentominoes calendar puzzle"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.9"
 dependencies = [
     "more-itertools>=10.6.0",
     "numba>=0.60.0",
     "numpy>=2.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
 ]

@@ -1,0 +1,1 @@
+This is a pretty crude solver for the pentominoes calendar puzzle.
