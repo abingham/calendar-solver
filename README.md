@@ -24,7 +24,7 @@ Running the solver
 To solve the calendar:
 
 1. Update the function `main()` in `source/calendar_solver/solver.py` so that the `BOARD` array matches the day's puzzle.
-2. Run:
+2. Run the `calendar-solver` command:
 ```
-python -m calendar_solver.solver
+calendar-solver
 ```

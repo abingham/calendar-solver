@@ -11,6 +11,9 @@ dependencies = [
     "numpy>=2.0.2",
 ]
 
+[project.scripts]
+calendar-solver = "calendar_solver.solver:main"
+
 [dependency-groups]
 test = []
 dev = [

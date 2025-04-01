@@ -8,9 +8,9 @@ import numpy
 
 def orientations(piece: numpy.ndarray) -> Iterable[numpy.ndarray]:
     """Return all orientations of a piece.
-    
+
     This rotates a piece and its flipped version, and returns all unique
-    orientations. 
+    orientations.
     """
 
     def rotated(p):
@@ -34,7 +34,7 @@ def count_zeros(arr: numpy.ndarray) -> int:
 
 def solve(board, pieces):
     """Solve the board with the given buckets.
-    
+
     This is the top-level solver function. It defers to a numba-based recursive implementation.
 
     Args:
