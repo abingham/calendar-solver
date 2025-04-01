@@ -1,11 +1,8 @@
-=========================
-Pentomino Calendar Solver
-=========================
+# Pentomino Calendar Solver
 
 This is a pretty crude solver for the pentominoes calendar puzzle.
 
-Installation
-============
+## Installation
 
 The preferred way is with [`uv`](https://docs.astral.sh/uv/):
 ```
@@ -18,8 +15,7 @@ pip install .
 ```
 But remember to manage your virtual environment if using `pip`.
 
-Running the solver
-==================
+## Running the solver
 
 To solve the calendar:
 
