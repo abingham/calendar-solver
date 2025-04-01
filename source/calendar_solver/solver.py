@@ -45,9 +45,9 @@ def solve(board, pieces):
     """
     # We have to copy the oriented pieces into numba-specific lists to make them amenable to numba.
     buckets = numba.typed.typedlist.List()
-    for piece in pieces:
+    for index, piece in enumerate(pieces, start=2):
         bucket = numba.typed.typedlist.List()
-        for orientation in orientations(piece):
+        for orientation in orientations(piece * index):
             # This "copy" seems to be necessary to make sure all of our pieces have the same layout. I guess views are problematic for numba, but I'm not 100% sure.
             bucket.append(orientation.copy())
         buckets.append(bucket)
@@ -97,31 +97,36 @@ def _solve(board, buckets, counter=0):
     return counter
 
 
-BOARD = numpy.array(
-    [
-        [0, 0, 1, 0, 0, 0, 0, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1],
-    ],
-    dtype=numpy.int8,
-)
+def main():
+    BOARD = numpy.array(
+        [
+            [0, 0, 1, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1],
+        ],
+        dtype=numpy.int8,
+    )
 
-PIECES = [
-    numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1], [1, 0, 0], [1, 0, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1, 1], [0, 1, 0, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1], [1, 1, 0]], dtype=numpy.int8),
-    numpy.array([[0, 0, 1], [1, 1, 1], [1, 0, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1], [0, 1, 0], [0, 1, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=numpy.int8),
-    numpy.array([[0, 0, 1, 1], [1, 1, 1, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1, 1], [1, 0, 0, 0]], dtype=numpy.int8),
-    numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8),
-]
+    PIECES = [
+        numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1], [1, 0, 0], [1, 0, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1, 1], [0, 1, 0, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1], [1, 1, 0]], dtype=numpy.int8),
+        numpy.array([[0, 0, 1], [1, 1, 1], [1, 0, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1], [0, 1, 0], [0, 1, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=numpy.int8),
+        numpy.array([[0, 0, 1, 1], [1, 1, 1, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1, 1], [1, 0, 0, 0]], dtype=numpy.int8),
+        numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8),
+    ]
 
-solved = solve(BOARD, PIECES)
-print("solved:", solved)
-print(BOARD)
+    solved = solve(BOARD, PIECES)
+    print("solved:", solved)
+    print(BOARD)
+
+
+if __name__ == "__main__":
+    main()
