@@ -61,62 +61,56 @@ def solve(board, pieces):
     return result == 0
 
 
-def has_deadends(board):
+def has_deadends(board, min_hole_size):
     """Check if the board has dead ends.
 
     A dead end is a cell that cannot be filled with any piece. This is a simple
     heuristic to prune the search space.
     """
-    ones = numpy.ones_like(board, dtype=numpy.int8) 
+    ones = numpy.ones_like(board, dtype=numpy.int8)
     ones = numpy.logical_xor(ones, board)
     inverse = numpy.array(ones, dtype=numpy.int8)
     label, num_features = scipy.ndimage.label(inverse)
-    unique, counts = numpy.unique(label, return_counts=True) 
+    unique, counts = numpy.unique(label, return_counts=True)
     counts = dict(zip(unique, counts))
 
     for value in range(1, num_features + 1):
-        if counts[value] < 5:
+        if counts[value] < min_hole_size:
             # This means we have a dead end. We can prune this branch.
             return True
-    
+
     return False
 
 
-def _solve(board, buckets, counter=0):
-    """Numba-based recursive function to solve the board.
+def _solve(board, buckets):
+    """DFS solver for the board.
 
     Returns:
-        0 if the board is solved, otherwise returns the number of total iterations.
+        True if the puzzle is solved, False otherwise.
     """
     if not buckets:
-        # TODO: This is a bit wrong. If we're called initially with no buckets, we return 0 here indicating "solved" when in fact we've solved nothing.
-        return counter
+        return False
 
     for piece in buckets[0]:
         for i in range(0, board.shape[0] - piece.shape[0] + 1):
             for j in range(0, board.shape[1] - piece.shape[1] + 1):
-                counter += 1
-                if counter % 1_000_000 == 0:
-                    print(counter)
                 pre_zeros = count_zeros(board)
                 expected_post_zeros = pre_zeros - numpy.count_nonzero(piece)
 
                 # Place the piece
                 board[i : i + piece.shape[0], j : j + piece.shape[1]] += piece
                 post_zeros = count_zeros(board)
-                if post_zeros == expected_post_zeros:
+                if (post_zeros == expected_post_zeros) and (not has_deadends(board, 5)):
                     if post_zeros == 0:
-                        return 0
+                        return True
 
-                    if not has_deadends(board):
-                        counter = _solve(board, buckets[1:], counter)
-                        if counter == 0:
-                            return 0
+                    if _solve(board, buckets[1:]):
+                        return True
 
                 # Remove the piece
                 board[i : i + piece.shape[0], j : j + piece.shape[1]] -= piece
 
-    return counter
+    return False
 
 
 def main():
@@ -133,28 +127,16 @@ def main():
     )
 
     PIECES = [
-        numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8), # 2
-        numpy.array([[1, 1, 1], 
-                     [1, 0, 0], 
-                     [1, 0, 0]], dtype=numpy.int8), # 4
-        numpy.array([[1, 1, 1, 1], 
-                     [0, 1, 0, 0]], dtype=numpy.int8), # 8
-        numpy.array([[1, 1, 1], 
-                     [1, 1, 0]], dtype=numpy.int8), # 8
-        numpy.array([[0, 0, 1], 
-                     [1, 1, 1], 
-                     [1, 0, 0]], dtype=numpy.int8), # 8
-        numpy.array([[1, 1, 1], 
-                     [0, 1, 0], 
-                     [0, 1, 0]], dtype=numpy.int8), # 4
-        numpy.array([[1, 1, 0], 
-                     [0, 1, 1], [0, 1, 0]], dtype=numpy.int8), # 8
-        numpy.array([[0, 0, 1, 1], 
-                     [1, 1, 1, 0]], dtype=numpy.int8), # 8
-        numpy.array([[1, 1, 1, 1], 
-                     [1, 0, 0, 0]], dtype=numpy.int8), # 8
-        numpy.array([[1, 1, 1], 
-                     [1, 0, 1]], dtype=numpy.int8), # 4
+        numpy.array([[1, 1, 1, 1, 1]], dtype=numpy.int8),  # 2
+        numpy.array([[1, 1, 1], [1, 0, 0], [1, 0, 0]], dtype=numpy.int8),  # 4
+        numpy.array([[1, 1, 1, 1], [0, 1, 0, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[1, 1, 1], [1, 1, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[0, 0, 1], [1, 1, 1], [1, 0, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[1, 1, 1], [0, 1, 0], [0, 1, 0]], dtype=numpy.int8),  # 4
+        numpy.array([[1, 1, 0], [0, 1, 1], [0, 1, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[0, 0, 1, 1], [1, 1, 1, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[1, 1, 1, 1], [1, 0, 0, 0]], dtype=numpy.int8),  # 8
+        numpy.array([[1, 1, 1], [1, 0, 1]], dtype=numpy.int8),  # 4
     ]
 
     solved = solve(BOARD, PIECES)

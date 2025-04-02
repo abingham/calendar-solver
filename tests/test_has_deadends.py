@@ -11,7 +11,7 @@ class TestHasDeadends(unittest.TestCase):
             [1, 2, 2],
         ], dtype=numpy.int8)
 
-        self.assertTrue(has_deadends(board))
+        self.assertTrue(has_deadends(board, 5))
 
     def test_has_no_deadends(self):
         board = numpy.array([
@@ -20,4 +20,4 @@ class TestHasDeadends(unittest.TestCase):
             [0, 2, 2],
         ], dtype=numpy.int8)
 
-        self.assertFalse(has_deadends(board))
+        self.assertFalse(has_deadends(board, 5))
