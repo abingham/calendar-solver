@@ -26,7 +26,7 @@ def orientations(piece: numpy.ndarray, allow_flip=False) -> Iterable[numpy.ndarr
 
     return more_itertools.unique_everseen(
         chain(*all_orientations),
-        key=lambda x: x.tobytes(),
+        key=lambda x: x.tobytes() + str(x.shape).encode("utf-8"),
     )
 
 
@@ -112,8 +112,8 @@ def _solve(board, buckets):
 def main():
     BOARD = numpy.array(
         [
-            [0, 0, 0, 1, 1, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],

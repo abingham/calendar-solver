@@ -6,6 +6,7 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
+    "exact-cover>=1.5.0",
     "more-itertools>=10.6.0",
     "numpy>=2.0.2",
     "scipy>=1.15.2",
@@ -13,9 +14,13 @@ dependencies = [
 
 [project.scripts]
 calendar-solver = "calendar_solver.solver:main"
+calendar-solver-ec = "calendar_solver.exact_cover_solver:main"
+
 
 [dependency-groups]
-test = []
+test = [
+    "pytest>=8.3.5",
+]
 dev = [
     { include-group = "test" },
     "ruff>=0.11.2",
