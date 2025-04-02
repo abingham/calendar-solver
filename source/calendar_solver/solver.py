@@ -4,6 +4,7 @@ import more_itertools
 import numba
 import numba.typed.typedlist
 import numpy
+import scipy.ndimage
 
 
 def orientations(piece: numpy.ndarray) -> Iterable[numpy.ndarray]:
@@ -60,7 +61,27 @@ def solve(board, pieces):
     return result == 0
 
 
-@numba.njit
+def has_deadends(board):
+    """Check if the board has dead ends.
+
+    A dead end is a cell that cannot be filled with any piece. This is a simple
+    heuristic to prune the search space.
+    """
+    ones = numpy.ones_like(board, dtype=numpy.int8) 
+    ones = numpy.logical_xor(ones, board)
+    inverse = numpy.array(ones, dtype=numpy.int8)
+    label, num_features = scipy.ndimage.label(inverse)
+    unique, counts = numpy.unique(label, return_counts=True) 
+    counts = dict(zip(unique, counts))
+
+    for value in range(1, num_features + 1):
+        if counts[value] < 5:
+            # This means we have a dead end. We can prune this branch.
+            return True
+    
+    return False
+
+
 def _solve(board, buckets, counter=0):
     """Numba-based recursive function to solve the board.
 
@@ -87,9 +108,10 @@ def _solve(board, buckets, counter=0):
                     if post_zeros == 0:
                         return 0
 
-                    counter = _solve(board, buckets[1:], counter)
-                    if counter == 0:
-                        return 0
+                    if not has_deadends(board):
+                        counter = _solve(board, buckets[1:], counter)
+                        if counter == 0:
+                            return 0
 
                 # Remove the piece
                 board[i : i + piece.shape[0], j : j + piece.shape[1]] -= piece
@@ -100,8 +122,8 @@ def _solve(board, buckets, counter=0):
 def main():
     BOARD = numpy.array(
         [
-            [0, 0, 0, 1, 0, 1, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 1, 0, 1, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 1, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
