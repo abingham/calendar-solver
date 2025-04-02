@@ -87,10 +87,10 @@ def _solve(board, buckets):
         for bucket in buckets
     ])
 
+    pre_zeros = count_zeros(board)
     for piece in buckets[0]:
         for i in range(0, board.shape[0] - piece.shape[0] + 1):
             for j in range(0, board.shape[1] - piece.shape[1] + 1):
-                pre_zeros = count_zeros(board)
                 expected_post_zeros = pre_zeros - numpy.count_nonzero(piece)
 
                 # Place the piece
