@@ -1,8 +1,7 @@
 from itertools import chain
 from typing import Iterable
+
 import more_itertools
-import numba
-import numba.typed.typedlist
 import numpy
 import scipy.ndimage
 
@@ -27,7 +26,6 @@ def orientations(piece: numpy.ndarray) -> Iterable[numpy.ndarray]:
     )
 
 
-@numba.njit
 def count_zeros(arr: numpy.ndarray) -> int:
     """Count the number of zeros in an array."""
     return arr.size - numpy.count_nonzero(arr)
@@ -45,14 +43,7 @@ def solve(board, pieces):
     Returns: True if the board is solved, False otherwise. The `board` argument will contain the final state of the board, solved or not.
     """
     # We have to copy the oriented pieces into numba-specific lists to make them amenable to numba.
-    buckets = numba.typed.typedlist.List()
-    for index, piece in enumerate(pieces, start=2):
-        bucket = numba.typed.typedlist.List()
-        for orientation in orientations(piece * index):
-            # This "copy" seems to be necessary to make sure all of our pieces have the same layout. I guess views are problematic for numba, but I'm not 100% sure.
-            bucket.append(orientation.copy())
-        buckets.append(bucket)
-
+    buckets = [tuple(orientations(piece * index)) for index, piece in enumerate(pieces, start=2)]
     result = _solve(board, buckets)
 
     if result == 0:
@@ -116,8 +107,8 @@ def _solve(board, buckets):
 def main():
     BOARD = numpy.array(
         [
-            [0, 0, 0, 1, 0, 1, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 0, 0, 1, 1, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
