@@ -6,7 +6,7 @@ import numpy
 import scipy.ndimage
 
 
-def orientations(piece: numpy.ndarray) -> Iterable[numpy.ndarray]:
+def orientations(piece: numpy.ndarray, allow_flip=False) -> Iterable[numpy.ndarray]:
     """Return all orientations of a piece.
 
     This rotates a piece and its flipped version, and returns all unique
@@ -20,8 +20,12 @@ def orientations(piece: numpy.ndarray) -> Iterable[numpy.ndarray]:
         yield numpy.rot90(p, 2)
         yield numpy.rot90(p, 3)
 
+    all_orientations = [rotated(piece)]
+    if allow_flip:
+        all_orientations.append(rotated(numpy.flip(piece, axis=0)))
+
     return more_itertools.unique_everseen(
-        chain(rotated(piece), rotated(numpy.flip(piece, axis=0))),
+        chain(*all_orientations),
         key=lambda x: x.tobytes(),
     )
 
@@ -44,12 +48,7 @@ def solve(board, pieces):
     """
     # We have to copy the oriented pieces into numba-specific lists to make them amenable to numba.
     buckets = [tuple(orientations(piece * index)) for index, piece in enumerate(pieces, start=2)]
-    result = _solve(board, buckets)
-
-    if result == 0:
-        assert count_zeros(board) == 0, "The board should have no zeros if it's solved."
-
-    return result == 0
+    return _solve(board, buckets)
 
 
 def has_deadends(board, min_hole_size):
@@ -82,6 +81,12 @@ def _solve(board, buckets):
     if not buckets:
         return False
 
+    # TODO: This could be pre-calculated for each bucket.
+    min_hole_size = min([
+        numpy.count_nonzero(bucket[0])
+        for bucket in buckets
+    ])
+
     for piece in buckets[0]:
         for i in range(0, board.shape[0] - piece.shape[0] + 1):
             for j in range(0, board.shape[1] - piece.shape[1] + 1):
@@ -91,7 +96,7 @@ def _solve(board, buckets):
                 # Place the piece
                 board[i : i + piece.shape[0], j : j + piece.shape[1]] += piece
                 post_zeros = count_zeros(board)
-                if (post_zeros == expected_post_zeros) and (not has_deadends(board, 5)):
+                if (post_zeros == expected_post_zeros) and (not has_deadends(board, min_hole_size)):
                     if post_zeros == 0:
                         return True
 
